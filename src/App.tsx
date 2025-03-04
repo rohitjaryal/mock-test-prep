@@ -2,7 +2,8 @@ import { useState } from "react";
 
 /**
  * Objectives:
- *  1. Add Active/ Inactive check
+ *  1. Add Add/Delete actions
+ *  2. Add toggle check action
  *  2. Review and fix issues.
  *  3. Optimize the code base.
  *  4. Unit testing.
@@ -19,22 +20,13 @@ function App() {
   const [input, setInput] = useState("");
 
   const addTodo = () => {
-    if (input.trim() === "") return;
     setTodos([...todos, { id: Date.now(), text: input, completed: false }]);
     setInput("");
   };
 
-  const toggleTodo = (id: number) => {
-    setTodos(
-      todos.map((todo) =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo
-      )
-    );
-  };
+  const toggleTodo = (id: number) => {};
 
-  const deleteTodo = (id: number) => {
-    setTodos(todos.filter((todo) => todo.id !== id));
-  };
+  const deleteTodo = (id: number) => {};
 
   return (
     <div
@@ -92,7 +84,6 @@ function App() {
           >
             <span
               style={{
-                cursor: "pointer",
                 textDecoration: todo.completed ? "line-through" : "none",
                 color: todo.completed ? "#6b7280" : "black",
               }}
@@ -103,10 +94,12 @@ function App() {
               <button
                 onClick={() => toggleTodo(todo.id)}
                 style={{
-                  color: "white",
+                  cursor: "pointer",
+                  color: "black",
                   padding: "4px 8px",
                   borderRadius: "4px",
                   border: "none",
+                  backgroundColor: "green",
                 }}
               >
                 {todo.completed ? "Completed" : "In-completed"}
