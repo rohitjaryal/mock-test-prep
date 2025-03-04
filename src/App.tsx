@@ -2,19 +2,29 @@ import { useState } from "react";
 
 /**
  * Objectives:
- *  1. Add Active/ Inactive check
- *  2. Review and fix issues.
- *  3. Optimize the code base.
+ *  1. Add Active/ Inactive check - Done
+ *  2. Review and fix issues. - Done
+ *  3. Optimize the code base. - Done
  *  4. Unit testing.
  */
 
+type Task = {
+  id: string;
+  content: string;
+  active: boolean;
+};
+
 function App() {
-  const [tasks, setTasks] = useState([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [currentTask, setCurrentTask] = useState("");
 
   function handleAdd() {
     const tempTasks = tasks;
-    tempTasks.push(currentTask);
+    tempTasks.push({
+      content: currentTask,
+      active: false,
+      id: crypto.randomUUID(),
+    });
     setTasks(tempTasks);
     setCurrentTask("");
   }
@@ -31,6 +41,7 @@ function App() {
       <input
         type="text"
         id="new-todo-input"
+        data-testid='new-todo-input'
         className="input input__lg"
         name="text"
         autoComplete="off"
@@ -39,6 +50,7 @@ function App() {
       />
       <button
         type="submit"
+        data-testid="add-todo-btn"
         className="btn btn__primary btn__lg"
         onClick={handleAdd}
       >
@@ -62,18 +74,27 @@ function App() {
           <span className="visually-hidden"> tasks</span>
         </button>
       </div>
-      <h2 id="list-heading">{tasks.length} tasks remaining</h2>
+      <h2 id="list-heading">
+        {tasks.filter((task) => !task.active).length} tasks remaining
+      </h2>
       <ul
-        role="list"
         className="todo-list stack-large stack-exception"
         aria-labelledby="list-heading"
       >
         {tasks.map((task, index) => (
-          <li className="todo stack-small">
+          <li className="todo stack-small" key={task.id}>
             <div className="c-cb">
-              <input type="checkbox" />
+              <input
+                type="checkbox"
+                checked={task.active}
+                onChange={(e) => {
+                  const newTasks = [...tasks];
+                  newTasks[index].active = e.target.checked;
+                  setTasks(newTasks);
+                }}
+              />
               <label className="todo-label" htmlFor={`todo-${index}`}>
-                {task}
+                {task.content}
               </label>
             </div>
           </li>
