@@ -2,12 +2,14 @@ import { useState } from "react";
 
 /**
  * Objectives:
- *  1. Add Add/Delete actions
- *  2. Add toggle check action
+ *  1. Add Add/Delete actions.
+ *  2. Add toggle check action.
  *  2. Review and fix issues.
  *  3. Optimize the code base.
- *  4. Unit testing.
+ *  4. Unit testing. (Jest and React Testing Library to write the unit test)
  */
+
+// Quality over quantity
 
 interface Todo {
   id: number;
@@ -15,18 +17,50 @@ interface Todo {
   completed: boolean;
 }
 
+function* genIds() {
+  let index = 0;
+  while (true) {
+    yield index++;
+  }
+}
+
+const genId = genIds();
+
 function App() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [input, setInput] = useState("");
 
   const addTodo = () => {
-    setTodos([...todos, { id: Date.now(), text: input, completed: false }]);
+    if (!input.trim().length) {
+      alert("Input should not be empty!");
+      return;
+    }
+    setTodos([
+      ...todos,
+      { id: genId.next().value as number, text: input, completed: false },
+    ]);
     setInput("");
   };
 
-  const toggleTodo = (id: number) => {};
+  const toggleTodo = (id: number) => {
+    setTodos((currentTodoList) => {
+      const newTodoList = [...currentTodoList];
 
-  const deleteTodo = (id: number) => {};
+      const index = newTodoList.findIndex((item) => item.id === id);
+      const newItem = {
+        ...newTodoList[index],
+        completed: !newTodoList[index].completed,
+      };
+      newTodoList[index] = newItem;
+
+      return newTodoList;
+    });
+  };
+
+  const deleteTodo = (id: number) => {
+    const newArray = todos.filter((todo) => todo.id !== id);
+    setTodos(newArray);
+  };
 
   return (
     <div
