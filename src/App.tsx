@@ -8,73 +8,121 @@ import { useState } from "react";
  *  4. Unit testing.
  */
 
-function App() {
-  const [tasks, setTasks] = useState([]);
-  const [currentTask, setCurrentTask] = useState("");
+interface Todo {
+  id: number;
+  text: string;
+  completed: boolean;
+}
 
-  function handleAdd() {
-    const tempTasks = tasks;
-    tempTasks.push(currentTask);
-    setTasks(tempTasks);
-    setCurrentTask("");
-  }
+function App() {
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [input, setInput] = useState("");
+
+  const addTodo = () => {
+    if (input.trim() === "") return;
+    setTodos([...todos, { id: Date.now(), text: input, completed: false }]);
+    setInput("");
+  };
+
+  const toggleTodo = (id: number) => {
+    setTodos(
+      todos.map((todo) =>
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo
+      )
+    );
+  };
+
+  const deleteTodo = (id: number) => {
+    setTodos(todos.filter((todo) => todo.id !== id));
+  };
 
   return (
-    <div className="todoapp stack-large">
-      <h1>TodoMatic</h1>
-
-      <h2 className="label-wrapper">
-        <label htmlFor="new-todo-input" className="label__lg">
-          What needs to be done?
-        </label>
-      </h2>
-      <input
-        type="text"
-        id="new-todo-input"
-        className="input input__lg"
-        name="text"
-        autoComplete="off"
-        onChange={(event) => setCurrentTask(event.target.value)}
-        value={currentTask}
-      />
-      <button
-        type="submit"
-        className="btn btn__primary btn__lg"
-        onClick={handleAdd}
+    <div
+      style={{
+        backgroundColor: "white",
+        padding: "24px",
+        borderRadius: "8px",
+        boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+      }}
+    >
+      <h1
+        style={{ fontSize: "20px", fontWeight: "bold", marginBottom: "16px" }}
       >
-        Add
-      </button>
-
-      <div className="filters btn-group stack-exception">
-        <button type="button" className="btn toggle-btn" aria-pressed="true">
-          <span className="visually-hidden">Show </span>
-          <span>all</span>
-          <span className="visually-hidden"> tasks</span>
-        </button>
-        <button type="button" className="btn toggle-btn" aria-pressed="false">
-          <span className="visually-hidden">Show </span>
-          <span>Active</span>
-          <span className="visually-hidden"> tasks</span>
-        </button>
-        <button type="button" className="btn toggle-btn" aria-pressed="false">
-          <span className="visually-hidden">Show </span>
-          <span>Completed</span>
-          <span className="visually-hidden"> tasks</span>
+        Todo List
+      </h1>
+      <div style={{ display: "flex", gap: "8px", marginBottom: "16px" }}>
+        <input
+          type="text"
+          style={{
+            border: "1px solid #ccc",
+            padding: "8px",
+            flex: "1",
+            borderRadius: "4px",
+          }}
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Add a new task"
+        />
+        <button
+          onClick={addTodo}
+          style={{
+            backgroundColor: "#3b82f6",
+            color: "white",
+            padding: "8px 16px",
+            borderRadius: "4px",
+            border: "none",
+          }}
+        >
+          Add
         </button>
       </div>
-      <h2 id="list-heading">{tasks.length} tasks remaining</h2>
-      <ul
-        role="list"
-        className="todo-list stack-large stack-exception"
-        aria-labelledby="list-heading"
-      >
-        {tasks.map((task, index) => (
-          <li className="todo stack-small">
-            <div className="c-cb">
-              <input type="checkbox" />
-              <label className="todo-label" htmlFor={`todo-${index}`}>
-                {task}
-              </label>
+      <ul style={{ listStyle: "none", padding: "0" }}>
+        {todos.map((todo) => (
+          <li
+            key={todo.id}
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              backgroundColor: "#e5e7eb",
+              padding: "8px",
+              borderRadius: "4px",
+              marginBottom: "8px",
+            }}
+          >
+            <span
+              style={{
+                cursor: "pointer",
+                textDecoration: todo.completed ? "line-through" : "none",
+                color: todo.completed ? "#6b7280" : "black",
+              }}
+            >
+              {todo.text}
+            </span>
+            <div>
+              <button
+                onClick={() => toggleTodo(todo.id)}
+                style={{
+                  color: "white",
+                  padding: "4px 8px",
+                  borderRadius: "4px",
+                  border: "none",
+                }}
+              >
+                {todo.completed ? "Completed" : "In-completed"}
+              </button>
+              <button
+                onClick={() => deleteTodo(todo.id)}
+                style={{
+                  backgroundColor: "#ef4444",
+                  color: "white",
+                  padding: "4px 8px",
+                  borderRadius: "4px",
+                  border: "none",
+                }}
+              >
+                Delete
+              </button>
             </div>
           </li>
         ))}
