@@ -42,19 +42,28 @@ function App() {
     setInput("");
   };
 
+  // const toggleTodo = (id: number) => {
+  //   setTodos((currentTodoList) => {
+  //     const newTodoList = [...currentTodoList];
+
+  //     const index = newTodoList.findIndex((item) => item.id === id);
+  //     const newItem = {
+  //       ...newTodoList[index],
+  //       completed: !newTodoList[index].completed,
+  //     };
+  //     newTodoList[index] = newItem;
+
+  //     return newTodoList;
+  //   });
+  // };
+
   const toggleTodo = (id: number) => {
-    setTodos((currentTodoList) => {
-      const newTodoList = [...currentTodoList];
-
-      const index = newTodoList.findIndex((item) => item.id === id);
-      const newItem = {
-        ...newTodoList[index],
-        completed: !newTodoList[index].completed,
-      };
-      newTodoList[index] = newItem;
-
-      return newTodoList;
-    });
+    // batching update
+    setTodos((currentTodoList) =>
+      currentTodoList.map((todo) =>
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo
+      )
+    );
   };
 
   const deleteTodo = (id: number) => {
